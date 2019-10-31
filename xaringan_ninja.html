@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Big Data: Primeiros Passos em R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ministrante: Mateus Maia     LED Date: Um encontro sobre Estatística e Data Science" />
+    <meta name="date" content="2019-10-26" />
+    <link href="xaringan_ninja_files/font-awesome/css/fontawesome-all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="example.css" type="text/css" />
+    <link rel="stylesheet" href="maia-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Big Data: Primeiros Passos em R
+## ⚔ <br/> Módulo I: Introdução ao SparklyR e Análise Exploratória
+### Ministrante: Mateus Maia <br/> <br/> LED Date: Um encontro sobre Estatística e Data Science <br/> <br/>
+### 2019-10-26
+
+---
+
+
+
+
+# Afinal, o que é **Big Data?**
+
+&lt;br/&gt;
+&lt;br/&gt;
+.center[![](4_vs_big_data.jpg)]
+.
+
+---
+# 5 V's
+&lt;br/&gt;
+&lt;br/&gt;
+.center[![](5_vsbig_data.png)]
+
+
+---
+# 6 V's
+&lt;br/&gt;
+.center[![](6_vs_big_data.jpg)]
+
+
+---
+# 8 V's
+
+&lt;img src="8_vs_big_data.png" width="1600" height="520" /&gt;
+
+---
+# 10 V's
+
+&lt;br/&gt;
+&lt;br/&gt;
+.center[![](10_vs_big_data.png)]
+
+
+---
+
+#Big Data
+- ###" Dados ou processos que requerem um processamento distribuído não convencional"
+&lt;footer&gt;--- Aaron Richter&lt;/footer&gt;
+
+&lt;br/&gt;
+
+- Ou seja, a considerando uma mesma base de dados, esta pode ser tratada como "big data" or "small data" a depender do que iremos fazer com ela
+
+---
+class: inverse, center, middle
+
+# Evolução dos dados
+
+---
+
+# Text Mining?
+&lt;img src="first_text_mining.jpg" width="1000" height="520" /&gt;
+
+---
+
+# Armazenamento de Informação
+&lt;img src="world-store-capacity-resized.png" width="4000" /&gt;
+
+
+---
+# Hadoop
+
+- .big[MapReduce]  .small[(Dean and Ghemawat, 2004)] 
+
+  - **Map** uma maneira de transformar cada arquivo em novos arquivos
+  - **Reduce** combina os resultados gerados durante a fase de map
+
+- .big[Hadoop File System] (HDFS) .small[(2006)]
+
+---
+# MapReduce
+&lt;img src="map_reduce_howto.png" width="856" height="480" /&gt;
+---
+# MapReduce
+&lt;img src="sandwich-mapreduce.jpg" width="1707" height="520" /&gt;
+---
+background-image: url(http://spark.apache.org/images/spark-logo-trademark.png)
+background-size: 100px
+background-position: 90% 8%
+
+# Spark
+
+- UC Berkeley's AMP Lab .small[(2009)]
+
+- Carregamento dados em memória
+
+&lt;br/&gt;
+
+.center[*"Apache Spark é um* ***dispositivo*** ***analítico*** ***unificado*** *para o processamento de dados em* ***larga escala***"]
+
+.center[&lt;a href="http://spark.apache.org/"&gt; *apache.org*&lt;/a&gt;]
+
+&lt;br/&gt;
+
+- APIs for para, Java, Python, **R**, SQL
+
+- Spark serve para o  ***processmento*** de daods, não de ***armazenamento*** 
+
+---
+#Spark
+
+
+.center[![](hadoop-spark-logistic.png)]
+
+
+---
+background-image: url(https://spark.rstudio.com/thumbs/sparklyr-hex.png)
+background-size: 100px
+background-position: 90% 8%
+
+#Sparklyr 
+
+- É uma interface do ***Apache Spark*** no R
+
+- Sparklyr é um back-end em *dplyr* para o Spark
+
+--
+
+.center[![](https://ohi-science.org/data-science-training/img/r4ds_data-science.png)]
+
+---
+class: inverse, center, middle
+
+# Quando não usar sparklyr?
+
+---
+# Devo usar SparklyR?
+
+- .big[**P**]: Consigo carregar a base de dados na minha máquina?
+--
+
+- .big[**R**]: Sim.
+
+--
+&lt;img src="not-spark-01.png" width="420" height="420" style="display: block; margin: auto;" /&gt;
+---
+
+class: inverse, center, middle
+
+# Análise Exploratória
+
+---
+# Inicializando os Dados
+
+
+```r
+library(sparklyr)
+# spark_install(version = "2.3")  #Caso ainda, não tenham baixando ou, se ainda caso queiram baixar
+#                                  uma versão específica
+
+sc&lt;-spark_connect(master = 'local',version = '2.3')
+```
+
+Uma vez conectado ao Spark, importa-se
+
+
+```r
+iris_spark&lt;-copy_to(sc,iris)
+
+iris_spark
+```
+
+```
+## # Source: spark&lt;iris&gt; [?? x 5]
+##    Sepal_Length Sepal_Width Petal_Length Petal_Width Species
+##           &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1          5.1         3.5          1.4         0.2 setosa 
+##  2          4.9         3            1.4         0.2 setosa 
+##  3          4.7         3.2          1.3         0.2 setosa 
+##  4          4.6         3.1          1.5         0.2 setosa 
+##  5          5           3.6          1.4         0.2 setosa 
+##  6          5.4         3.9          1.7         0.4 setosa 
+##  7          4.6         3.4          1.4         0.3 setosa 
+##  8          5           3.4          1.5         0.2 setosa 
+##  9          4.4         2.9          1.4         0.2 setosa 
+## 10          4.9         3.1          1.5         0.1 setosa 
+## # ... with more rows
+```
+
+
+```r
+iris_spark %&gt;% class
+```
+
+```
+## [1] "tbl_spark" "tbl_sql"   "tbl_lazy"  "tbl"
+```
+
+
+---
+#Interface Web
+
+- O que está ocorrendo no Ambiente Spark?
+
+
+```r
+#Para verificar o ambiente spark
+spark_web(sc)
+```
+ 
+- Fechando a conexão
+
+
+```r
+spark_disconnect(sc)
+```
+
+```
+## NULL
+```
+
+---
+class: inverse, center, middle
+
+# Importando os dados
+
+---
+# Data Lakes e diversidades de dados
+
+.center[![](importing-database.png)]
+
+---
+# Dados eleitorais
+
+.center[![](tse_dados_eleitorais.png)]
+
+.center[http://dontpad.com/ledate_big_data]
+
+---
+# Lendo os dados
+
+```r
+library(sparklyr)
+sc &lt;- spark_connect(master = "local", version = "2.3")
+
+#Votação dos candidatos de 2016
+votacao_candidatos_2016&lt;-spark_read_csv(sc,
+                                        path = "D:/my_computer/Est_ML_2019/eleicoes_2016/votacao_candidato_2016",
+                                        memory = FALSE,
+                                        charset = 'latin1',
+                                        delimiter = ";")
+
+#Base de dados discricionário dos candidatos de 2016
+candidatos_2016&lt;-spark_read_csv(sc,
+                                path='D:/my_computer/Est_ML_2019/eleicoes_2016/cand_2016',
+                                memory = FALSE,
+                                charset = 'latin1',
+                                delimiter = ';')
+```
+
+
+---
+#Schema
+
+
+```r
+#Definindo as variáveis (Schema)
+toy_example&lt;-data.frame(x=rep(1:5,10^6),y=rep(letters[1:5],10^6))
+write.csv(toy_example,file='toy_example.csv',row.names = FALSE)
+especificacao_colunas&lt;-c(x='character',y='character')
+
+#Example:
+toy_data&lt;-spark_read_csv(sc,path="toy_example.csv",columns = especificacao_colunas)
+toy_data %&gt;% head(3)
+toy_data&lt;-spark_read_csv(sc,path="toy_example.csv",overwrite = TRUE)
+toy_data %&gt;% head(3)
+```
+---
+#Write
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Format &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Read &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Write &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Comma Separated Values &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_read_csv() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_write_csv() &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; JavaScript Object Notation (JSON) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_read_json() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_write_json() &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Library for Support Vector Machines (LIBSVM) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_read_libsvm() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_write_libsvm() &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Optimized Row Columnar (ORC) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_read_orc() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_write_orc() &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Apache Parquet &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_read_parquet() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_write_parquet() &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Text &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_read_text() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spark_write_text() &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Tranformar e Visualizar
+
+.center[![](https://ohi-science.org/data-science-training/img/r4ds_data-science.png)]
+
+---
+background-image: url(https://ih1.redbubble.net/image.543344990.1730/flat,800x800,070,f.jpg)
+background-size: 100px
+background-position: 90% 8%
+
+#Magrittr
+
+
+```r
+mean(sort(iris$Sepal.Length)[1:5])
+```
+
+```
+## [1] 4.4
+```
+
+
+
+```r
+iris$Sepal.Length %&gt;% sort %&gt;% .[1:5] %&gt;% mean 
+```
+
+```
+## [1] 4.4
+```
+
+
+---
+background-image: url(https://github.com/rstudio/hex-stickers/blob/master/PNG/dplyr.png?raw=true)
+background-size: 100px
+background-position: 90% 8%
+
+#Dplyr
+
+
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+dplyr_example&lt;-iris %&gt;% 
+               filter(Sepal.Length&gt;5) %&gt;% 
+               mutate(Sepal_Ratio=Sepal.Length/Sepal.Width) %&gt;% 
+               select(Sepal_Ratio,Species) %&gt;% 
+               group_by(Species) %&gt;% 
+               summarise(Sepal_Ratio_Mean=mean(Sepal_Ratio)) %&gt;% 
+               arrange(Sepal_Ratio_Mean)
+```
+
+---
+# Comunicação R e Spark
+
+.center[![](sparklyr-spark-01.png)]
+
+
+---
+# Comunicação R e Spark
+
+.center[![](spark-importing-data-01.png)]
+
+
+---
+# Spark DataFrame
+
+
+```r
+head(candidatos_2016,n = 3)
+```
+
+```
+## # Source: spark&lt;?&gt; [?? x 58]
+##   DT_GERACAO HH_GERACAO ANO_ELEICAO CD_TIPO_ELEICAO NM_TIPO_ELEICAO
+##   &lt;chr&gt;      &lt;chr&gt;            &lt;int&gt;           &lt;int&gt; &lt;chr&gt;          
+## 1 20/10/2019 00:16:06          2016               2 ELEIÇÃO ORDINÁ~
+## 2 20/10/2019 00:16:06          2016               2 ELEIÇÃO ORDINÁ~
+## 3 20/10/2019 00:16:06          2016               2 ELEIÇÃO ORDINÁ~
+## # ... with 53 more variables: NR_TURNO &lt;int&gt;, CD_ELEICAO &lt;int&gt;,
+## #   DS_ELEICAO &lt;chr&gt;, DT_ELEICAO &lt;chr&gt;, TP_ABRANGENCIA &lt;chr&gt;, SG_UF &lt;chr&gt;,
+## #   SG_UE &lt;int&gt;, NM_UE &lt;chr&gt;, CD_CARGO &lt;int&gt;, DS_CARGO &lt;chr&gt;,
+## #   SQ_CANDIDATO &lt;dbl&gt;, NR_CANDIDATO &lt;int&gt;, NM_CANDIDATO &lt;chr&gt;,
+## #   NM_URNA_CANDIDATO &lt;chr&gt;, NM_SOCIAL_CANDIDATO &lt;chr&gt;,
+## #   NR_CPF_CANDIDATO &lt;chr&gt;, NM_EMAIL &lt;chr&gt;, CD_SITUACAO_CANDIDATURA &lt;int&gt;,
+## #   DS_SITUACAO_CANDIDATURA &lt;chr&gt;, CD_DETALHE_SITUACAO_CAND &lt;int&gt;,
+## #   DS_DETALHE_SITUACAO_CAND &lt;chr&gt;, TP_AGREMIACAO &lt;chr&gt;, NR_PARTIDO &lt;int&gt;,
+## #   SG_PARTIDO &lt;chr&gt;, NM_PARTIDO &lt;chr&gt;, SQ_COLIGACAO &lt;dbl&gt;,
+## #   NM_COLIGACAO &lt;chr&gt;, DS_COMPOSICAO_COLIGACAO &lt;chr&gt;,
+## #   CD_NACIONALIDADE &lt;int&gt;, DS_NACIONALIDADE &lt;chr&gt;,
+## #   SG_UF_NASCIMENTO &lt;chr&gt;, CD_MUNICIPIO_NASCIMENTO &lt;int&gt;,
+## #   NM_MUNICIPIO_NASCIMENTO &lt;chr&gt;, DT_NASCIMENTO &lt;chr&gt;,
+## #   NR_IDADE_DATA_POSSE &lt;int&gt;, NR_TITULO_ELEITORAL_CANDIDATO &lt;dbl&gt;,
+## #   CD_GENERO &lt;int&gt;, DS_GENERO &lt;chr&gt;, CD_GRAU_INSTRUCAO &lt;int&gt;,
+## #   DS_GRAU_INSTRUCAO &lt;chr&gt;, CD_ESTADO_CIVIL &lt;int&gt;, DS_ESTADO_CIVIL &lt;chr&gt;,
+## #   CD_COR_RACA &lt;int&gt;, DS_COR_RACA &lt;chr&gt;, CD_OCUPACAO &lt;int&gt;,
+## #   DS_OCUPACAO &lt;chr&gt;, NR_DESPESA_MAX_CAMPANHA &lt;int&gt;,
+## #   CD_SIT_TOT_TURNO &lt;int&gt;, DS_SIT_TOT_TURNO &lt;chr&gt;, ST_REELEICAO &lt;chr&gt;,
+## #   ST_DECLARAR_BENS &lt;chr&gt;, NR_PROTOCOLO_CANDIDATURA &lt;dbl&gt;,
+## #   NR_PROCESSO &lt;chr&gt;
+```
+
+
+```r
+nrow(candidatos_2016)
+```
+
+```
+## [1] NA
+```
+
+
+```r
+sdf_nrow(candidatos_2016)
+```
+
+```
+## [1] 996358
+```
+
+-Funções "sdf_" 
+
+---
+#Exemplo
+
+Coletando os 5 vereadores mais votados em Salvador
+
+```r
+votacao_candidatos_2016 %&gt;% 
+  filter(NM_MUNICIPIO=="SALVADOR" &amp; DS_CARGO=="Vereador") %&gt;% 
+  group_by(NM_URNA_CANDIDATO) %&gt;% 
+  summarise(votos_total=sum(QT_VOTOS_NOMINAIS,na.rm = TRUE)) %&gt;% 
+  arrange(desc(votos_total)) %&gt;%
+  head(n=5)
+```
+
+```
+## Warning: `overscope_eval_next()` is deprecated as of rlang 0.2.0.
+## Please use `eval_tidy()` with a data mask instead.
+## This warning is displayed once per session.
+```
+
+```
+## Warning: `overscope_clean()` is deprecated as of rlang 0.2.0.
+## This warning is displayed once per session.
+```
+
+```
+## # Source:     spark&lt;?&gt; [?? x 2]
+## # Ordered by: desc(votos_total)
+##   NM_URNA_CANDIDATO votos_total
+##   &lt;chr&gt;                   &lt;dbl&gt;
+## 1 PAULO CAMARA            18432
+## 2 LUIZ CARLOS             16530
+## 3 MARCELLE MORAES         15727
+## 4 ISNARD ARAUJO           15081
+## 5 DUDA SANCHES            14455
+```
+
+---
+# GGPlot and DBplot
+
+.center[![](spark_plot_r.png)]
+
+---
+# Example
+
+```r
+library(ggplot2)
+candidatos_2016 %&gt;% 
+  select(DS_GENERO) %&gt;% 
+  ggplot()+
+    geom_bar(mapping = aes(DS_GENERO))+theme_bw()
+```
+
+&lt;img src="xaringan_ninja_files/figure-html/unnamed-chunk-23-1.png" width="350" height="350" /&gt;
+
+---
+# Example
+
+```r
+library(ggplot2)
+candidatos_2016 %&gt;% 
+  dplyr::group_by(DS_GENERO) %&gt;%
+  tally() %&gt;% 
+  collect() %&gt;% 
+  ggplot()+
+  geom_col(mapping = aes(x = DS_GENERO,y = n))+theme_bw()
+```
+
+&lt;img src="xaringan_ninja_files/figure-html/unnamed-chunk-24-1.png" width="350" height="350" /&gt;
+---
+#DBPlot
+
+
+```r
+library(dbplot)
+candidatos_2016 %&gt;% 
+    filter(!is.na(SG_PARTIDO)) %&gt;% 
+    dbplot_bar(SG_PARTIDO)+
+labs(title = "Candidatos de cada partido",subtitle = "Histograma")+
+theme_bw()+theme(axis.text.x = element_text(angle=90))
+```
+
+&lt;img src="xaringan_ninja_files/figure-html/unnamed-chunk-25-1.png" width="350" height="350" /&gt;
+
+---
+background-image: url(code_time.gif)
+background-size: cover
+class: center, middle, inverse
+
+#Hora da Prática!
+
+---
+#Prática:
+
+Utilizando o sparklyr obtenha as seguintes análises:
+
+1. As dez principais ocupações dos candidatos políticos
+
+1. Faça um plot dos 10 candidatos veradores mais votados do Brasil
+
+1. Um plot que mostre a proporção entre candidatos negros e brancos eleitos em cada estado
+
+1. Plote um gráfico de colunas, com a quantidade de votos, dos 5 candidatos negros mais votados em Salvador, e os 5 candidatos brancos mais votados em Salvador. .small[Dica: Utilize o innner_join] 
+
+
+---
+#10 Principais Ocupações
+
+
+```
+## # Source:     spark&lt;?&gt; [?? x 2]
+## # Ordered by: desc(n)
+##    DS_OCUPACAO                                         n
+##    &lt;chr&gt;                                           &lt;dbl&gt;
+##  1 OUTROS                                         181696
+##  2 AGRICULTOR                                      71798
+##  3 COMERCIANTE                                     64292
+##  4 SERVIDOR PÚBLICO MUNICIPAL                      64124
+##  5 EMPRESÁRIO                                      52006
+##  6 VEREADOR                                        48932
+##  7 DONA DE CASA                                    48904
+##  8 APOSENTADO (EXCETO SERVIDOR PÚBLICO)            32682
+##  9 PROFESSOR DE ENSINO FUNDAMENTAL                 24292
+## 10 ESTUDANTE, BOLSISTA, ESTAGIÁRIO E ASSEMELHADOS  18592
+## # ... with more rows
+```
+
+
+```r
+candidatos_2016 %&gt;% 
+  group_by(DS_OCUPACAO) %&gt;% 
+  tally(sort=TRUE) %&gt;% 
+  head(n=11)
+```
+---
+#10 mais votados do Brasil
+
+![](xaringan_ninja_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+
+---
+#10 mais votados do Brasil
+
+
+```r
+votacao_candidatos_2016 %&gt;% 
+  filter(DS_CARGO=="Vereador") %&gt;% 
+  group_by(NM_CANDIDATO) %&gt;% 
+  summarise(total_votos=sum(QT_VOTOS_NOMINAIS)) %&gt;% 
+  arrange(desc(total_votos)) %&gt;%
+  head(n=10) %&gt;% collect %&gt;% 
+  ggplot()+
+  geom_col(mapping=aes(x=reorder(NM_CANDIDATO,total_votos),y=total_votos))+
+  coord_flip()+theme_bw()
+```
+---
+# Razão candidatos negros/brancos por Estado
+![](xaringan_ninja_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+---
+# Razão candidatos negros/brancos por Estado
+
+```r
+  candidatos_2016 %&gt;% 
+  group_by(SG_UF,DS_COR_RACA) %&gt;%
+  filter(DS_COR_RACA=="BRANCA" | DS_COR_RACA=="PRETA" &amp; DS_SIT_TOT_TURNO=="ELEITO") %&gt;%  
+  tally(sort = TRUE) %&gt;% 
+  ungroup(DS_COR_RACA,SG_UF) %&gt;% 
+  group_by(SG_UF) %&gt;% 
+  mutate(ratio_total=n/sum(n,na.rm = TRUE)) %&gt;% 
+  collect() %&gt;%
+  ggplot()+
+  geom_col(mapping = aes(x = SG_UF,y=ratio_total,fill=DS_COR_RACA))+coord_flip()+theme_bw()
+```
+---
+#Candidatos Negros e Brancos em Salvador
+
+![](xaringan_ninja_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+---
+
+```r
+nomes_comuns&lt;-intersect(colnames(candidatos_2016),colnames(votacao_candidatos_2016))
+
+vereadores_raca&lt;-candidatos_2016 %&gt;% 
+                  filter(DS_CARGO=="VEREADOR") %&gt;% 
+                  inner_join(votacao_candidatos_2016,by=c("NM_CANDIDATO")) %&gt;% 
+                  select(NM_CANDIDATO,NM_MUNICIPIO,QT_VOTOS_NOMINAIS,DS_COR_RACA) %&gt;% 
+                  filter(NM_MUNICIPIO=="SALVADOR") %&gt;% 
+                  group_by(NM_CANDIDATO,DS_COR_RACA) %&gt;% 
+                  summarise(votos_totais=sum(QT_VOTOS_NOMINAIS)) 
+
+vereadores_brancos&lt;-vereadores_raca %&gt;% filter(DS_COR_RACA=="BRANCA") %&gt;%
+                    arrange(desc(votos_totais)) %&gt;% head(n=5) %&gt;% 
+                    collect
+
+vereadores_pretos&lt;-vereadores_raca %&gt;% filter(DS_COR_RACA=="PRETA") %&gt;%
+                    arrange(desc(votos_totais)) %&gt;% head(n=5) %&gt;%
+                    collect
+  
+vereadores_brancos$rank&lt;-1:5
+vereadores_pretos$rank&lt;-1:5
+
+top_5_salvador_raca&lt;-rbind.data.frame(vereadores_brancos,vereadores_pretos) %&gt;%
+                     ggplot()+
+                     geom_col(mapping =
+                                aes(x=rank,y=votos_totais,fill=DS_COR_RACA),
+                                position = "dodge")+
+                     xlab("Ranking dos Mais votados")+
+                     ylab("Quantidade absoluta de votos totais")+
+                     scale_y_continuous(labels=scales::comma)+
+                     theme_bw()
+
+top_5_salvador_raca
+```
+---
+class: title-slide-final, middle
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Bras%C3%A3o_da_UFBA.png/300px-Bras%C3%A3o_da_UFBA.png)
+background-size: 85px
+background-position: 9% 15%
+
+# Thanks for your attention!
+
+.pull-down[
+
+&lt;a href="mailto:mateusmaia11@gmail.com"&gt;
+.white[<i class="fas  fa-paper-plane "></i>mateusmaia11@gmail.com]
+&lt;/a&gt;
+
+&lt;a href="https://mateusmaiads.github.io/ensemble_qualify"&gt;
+.white[<i class="fas  fa-link "></i> mateusmaiads.github.io/ensemble_qualify]
+&lt;/a&gt;
+
+&lt;a href="https://twitter.com/MateusMaiaM"&gt;
+.white[<i class="fab  fa-twitter "></i> @MateusMaiaM]
+&lt;/a&gt;
+
+&lt;a href="https://github.com/MateusMaiaDS"&gt;
+.white[<i class="fab  fa-github "></i> @MateusMaiaDS]
+&lt;/a&gt;
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
