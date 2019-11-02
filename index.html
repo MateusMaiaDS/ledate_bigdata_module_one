@@ -217,12 +217,7 @@ Uma vez com o Spark instalado, conecta-se:
 
 ```r
 #Configurando os parâmetros da conexão do Spark
-conf &lt;- spark_config()
-#Definindo nº de cores
-conf$`sparklyr.cores.local` &lt;- 4
-#Memória que será utilizada
-conf$`sparklyr.shell.driver-memory` &lt;- "8G"
-sc&lt;-spark_connect(master = 'local',version = '2.3',config = conf)
+sc&lt;-spark_connect(master = 'local',version = '2.3')
 #Copiando o data.frame iris para ambiente spark
 iris_spark&lt;-copy_to(sc,iris)
 
